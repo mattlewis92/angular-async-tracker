@@ -130,7 +130,7 @@ export class AsyncTracker {
   /**
    * Causes a tracker to immediately become inactive and stop tracking all current promises and subscriptions.
    */
-  cancel(): void {
+  clear(): void {
     if (this[activationDelayTimeout]) {
       this[activationDelayTimeout].cancel();
       delete this[activationDelayTimeout];
