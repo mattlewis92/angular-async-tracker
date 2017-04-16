@@ -70,6 +70,7 @@ export class MyComponent {
       .subscribe((result) => {
         console.log(result);
       });
+    // `asyncTracker.add` accepts promises or observable subscriptions
     this.asyncTracker.add(saved);
   }
 
