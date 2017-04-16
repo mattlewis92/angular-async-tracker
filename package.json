@@ -31,7 +31,12 @@
   },
   "keywords": [
     "angular2",
-    "angular"
+    "angular",
+    "angular4",
+    "async-tracker",
+    "promises",
+    "observables",
+    "async"
   ],
   "author": "Matt Lewis",
   "license": "MIT",
