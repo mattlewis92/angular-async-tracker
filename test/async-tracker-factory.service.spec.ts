@@ -64,4 +64,28 @@ describe('async-tracker-factory service', () => {
     expect(tracker.active).to.be.false;
   });
 
+  it('should throw when passing non promises or subscrptions', () => {
+    const tracker: AsyncTracker = trackerFactory.create();
+    const arg: Promise<any> = {} as Promise<any>; // hack to make typescript happy
+    expect(() => tracker.add(arg)).to.throw();
+  });
+
+  it('should accept an array of items to add', async(() => {
+    const tracker: AsyncTracker = trackerFactory.create();
+    const {promise, resolve} = createPromise();
+    const subject: Subject<any> = new Subject();
+    expect(tracker.active).to.be.false;
+    tracker.add([
+      subject.take(1).subscribe(),
+      promise
+    ]);
+    expect(tracker.active).to.be.true;
+    resolve();
+    setTimeout(() => {
+      expect(tracker.active).to.be.true;
+      subject.next();
+      expect(tracker.active).to.be.false;
+    });
+  }));
+
 });

@@ -24,21 +24,27 @@ export class AsyncTracker {
     return this[isActive];
   }
 
-  add(promiseOrSubscription: PromiseOrSubscription): void {
-    this[tracking].push(promiseOrSubscription);
-    this.updateIsActive();
-    if (isPromise(promiseOrSubscription)) {
-      const promise: Promise<any> = promiseOrSubscription as Promise<any>;
-      promise.then(() => {
-        this.removeFromTracking(promiseOrSubscription);
-      }, () => {
-        this.removeFromTracking(promiseOrSubscription);
-      });
-    } else if (isSubscription(promiseOrSubscription)) {
-      const subscription: Subscription = promiseOrSubscription as Subscription;
-      subscription.add(() => {
-        this.removeFromTracking(promiseOrSubscription);
-      });
+  add(promiseOrSubscription: PromiseOrSubscription | PromiseOrSubscription[]): void {
+    if (Array.isArray(promiseOrSubscription)) {
+      promiseOrSubscription.forEach(arrayItem => this.add(arrayItem));
+    } else {
+      this[tracking].push(promiseOrSubscription);
+      this.updateIsActive();
+      if (isPromise(promiseOrSubscription)) {
+        const promise: Promise<any> = promiseOrSubscription as Promise<any>;
+        promise.then(() => {
+          this.removeFromTracking(promiseOrSubscription);
+        }, () => {
+          this.removeFromTracking(promiseOrSubscription);
+        });
+      } else if (isSubscription(promiseOrSubscription)) {
+        const subscription: Subscription = promiseOrSubscription as Subscription;
+        subscription.add(() => {
+          this.removeFromTracking(promiseOrSubscription);
+        });
+      } else {
+        throw new Error('asyncTracker.add expects either a promise or an observable subscription.');
+      }
     }
   }
 
