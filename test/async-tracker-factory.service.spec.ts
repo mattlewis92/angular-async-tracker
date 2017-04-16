@@ -94,16 +94,16 @@ describe('async-tracker-factory service', () => {
     const tracker: AsyncTracker = trackerFactory.create();
     const subject1: Subject<any> = new Subject();
     const subject2: Subject<any> = new Subject();
-    expect(tracker.activeCount).to.equal(0);
+    expect(tracker.trackingCount).to.equal(0);
     tracker.add([
       subject1.take(1).subscribe(),
       subject2.take(1).subscribe()
     ]);
-    expect(tracker.activeCount).to.equal(2);
+    expect(tracker.trackingCount).to.equal(2);
     subject1.next();
-    expect(tracker.activeCount).to.equal(1);
+    expect(tracker.trackingCount).to.equal(1);
     subject2.next();
-    expect(tracker.activeCount).to.equal(0);
+    expect(tracker.trackingCount).to.equal(0);
   });
 
   it('should expose an observable that changes when isActive changes', () => {
@@ -130,15 +130,15 @@ describe('async-tracker-factory service', () => {
     const tracker: AsyncTracker = trackerFactory.create();
     const subject: Subject<any> = new Subject();
     expect(tracker.active).to.be.false;
-    expect(tracker.activeCount).to.equal(0);
+    expect(tracker.trackingCount).to.equal(0);
     tracker.add(subject.take(1).subscribe());
-    expect(tracker.activeCount).to.equal(1);
+    expect(tracker.trackingCount).to.equal(1);
     expect(tracker.active).to.be.true;
     tracker.destroy();
-    expect(tracker.activeCount).to.equal(0);
+    expect(tracker.trackingCount).to.equal(0);
     expect(tracker.active).to.be.false;
     subject.next();
-    expect(tracker.activeCount).to.equal(0);
+    expect(tracker.trackingCount).to.equal(0);
     expect(tracker.active).to.be.false;
   }));
 

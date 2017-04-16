@@ -66,7 +66,7 @@ export class AsyncTracker {
     return this[isActive];
   }
 
-  get activeCount(): number {
+  get trackingCount(): number {
     return this[tracking].length;
   }
 
