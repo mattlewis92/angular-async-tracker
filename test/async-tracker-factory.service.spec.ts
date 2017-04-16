@@ -142,22 +142,6 @@ describe('async-tracker-factory service', () => {
     expect(tracker.active).to.be.false;
   });
 
-  it('should expose all tracking items', () => {
-    const tracker: AsyncTracker = trackerFactory.create();
-    const subject: Subject<any> = new Subject();
-    const subscription: Subscription = subject.take(1).subscribe();
-    expect(tracker.tracking).to.deep.equal([]);
-    tracker.add(subscription);
-    expect(tracker.tracking).to.deep.equal([subscription]);
-    expect(tracker.tracking).not.to.equal(tracker.tracking);
-  });
-
-  it('should expose a clone of the tracking array', () => {
-    const tracker: AsyncTracker = trackerFactory.create();
-    expect(tracker.tracking).to.deep.equal(tracker.tracking);
-    expect(tracker.tracking).not.to.equal(tracker.tracking);
-  });
-
   describe('activationDelay', () => {
 
     it('should take 500ms to activate the tracker', fakeAsync(() => {
@@ -200,6 +184,25 @@ describe('async-tracker-factory service', () => {
       expect(tracker.active).to.be.false;
       subject.next();
       expect(tracker.active).to.be.false;
+    }));
+
+    it('should be tracking irrespective of the activation delay', fakeAsync(() => {
+      const tracker: AsyncTracker = trackerFactory.create({activationDelay: 500});
+      const subject: Subject<any> = new Subject();
+      expect(tracker.active).to.be.false;
+      expect(tracker.tracking).to.be.false;
+      tracker.add(subject.take(1).subscribe());
+      expect(tracker.active).to.be.false;
+      expect(tracker.tracking).to.be.true;
+      tick(499);
+      expect(tracker.active).to.be.false;
+      expect(tracker.tracking).to.be.true;
+      tick(1);
+      expect(tracker.active).to.be.true;
+      expect(tracker.tracking).to.be.true;
+      subject.next();
+      expect(tracker.active).to.be.false;
+      expect(tracker.tracking).to.be.false;
     }));
 
   });

@@ -88,8 +88,8 @@ export class AsyncTracker {
    * That is, whether any of the promises / subscriptions added to/created by this tracker are still pending.
    * This method has no regard for `activationDelay`.
    */
-  get tracking(): PromiseOrSubscription[] {
-    return [...this[tracking]];
+  get tracking(): boolean {
+    return this[tracking].length > 0;
   }
 
   /**
