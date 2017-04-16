@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { Subscription } from 'rxjs/Subscription';
 import { Subject } from 'rxjs/Subject';
 
@@ -111,6 +112,7 @@ export class AsyncTracker {
 
 }
 
+@Injectable()
 export class AsyncTrackerFactory {
 
   create(trackerOptions?: AsyncTrackerOptions): AsyncTracker {
