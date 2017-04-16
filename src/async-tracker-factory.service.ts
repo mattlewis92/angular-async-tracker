@@ -54,26 +54,48 @@ export interface AsyncTrackerOptions {
 
 export class AsyncTracker {
 
+  /**
+   * An observable that emits true or false as the value for `active` changes
+   */
   active$: Subject<boolean> = new Subject();
 
+  /**
+   * @param trackerOptions.activationDelay - number of milliseconds that an added promise needs to be pending before this tracker is active
+   */
   constructor(trackerOptions: AsyncTrackerOptions = {}) {
     this[tracking] = [];
     this[options] = trackerOptions;
     updateIsActive(this);
   }
 
+  /**
+   * Returns whether this tracker is currently active. That is, whether any of the promises added to/created by this tracker
+   * are still pending. Note: if the `activationDelay` has not elapsed yet, this will return false.
+   */
   get active(): boolean {
     return this[isActive];
   }
 
+  /**
+   * The count of promises or subscriptions currently being tracked.
+   */
   get trackingCount(): number {
     return this[tracking].length;
   }
 
+  /**
+   * Returns whether this tracker is currently tracking a request.
+   * That is, whether any of the promises / subscriptions added to/created by this tracker are still pending.
+   * This method has no regard for `activationDelay`.
+   */
   get tracking(): PromiseOrSubscription[] {
     return [...this[tracking]];
   }
 
+  /**
+   * Add any arbitrary promise or observable subscription to the tracker.
+   * `tracker.active` will be true until a promise is resolved or rejected or a subscription emits the first value.
+   */
   add(promiseOrSubscription: PromiseOrSubscription | PromiseOrSubscription[]): void {
     if (Array.isArray(promiseOrSubscription)) {
       promiseOrSubscription.forEach(arrayItem => this.add(arrayItem));
@@ -105,6 +127,9 @@ export class AsyncTracker {
     }
   }
 
+  /**
+   * Causes a tracker to immediately become inactive and stop tracking all current promises and subscriptions.
+   */
   cancel(): void {
     if (this[activationDelayTimeout]) {
       this[activationDelayTimeout].cancel();
