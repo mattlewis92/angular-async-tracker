@@ -1,6 +1,6 @@
 {
   "name": "angular-async-tracker",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "A port of angular-promise-tracker to angular 2+ that also supports observables",
   "main": "./bundles/angular-async-tracker.umd.js",
   "module": "./index.js",
