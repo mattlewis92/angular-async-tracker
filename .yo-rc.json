@@ -1,0 +1,13 @@
+{
+  "generator-angular-library": {
+    "githubUsername": "mattlewis92",
+    "githubRepoName": "angular-async-tracker",
+    "npmModuleName": "angular-async-tracker",
+    "moduleGlobal": "angularAsyncTracker",
+    "ngModuleName": "AsyncTrackerModule",
+    "selectorPrefix": "mwl",
+    "projectTitle": "angular async tracker",
+    "projectDescription": "A port of angular-promise-tracker to angular 2+ that also supports observables",
+    "authorName": "Matt Lewis"
+  }
+}
