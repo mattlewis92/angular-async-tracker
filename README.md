@@ -17,7 +17,7 @@
 
 ## About
 
-A port of angular-promise-tracker to angular 2+ that also supports observables
+A port of [angular-promise-tracker](https://github.com/ajoslin/angular-promise-tracker) to angular 2+ that also supports observables
 
 ## Installation
 
@@ -43,11 +43,37 @@ export class MyModule {}
 Finally use in one of your apps components:
 ```typescript
 import { Component } from '@angular/core';
+import { Http } from '@angular/http';
+import { Subscription } from 'rxjs/Subscription';
+import { AsyncTrackerFactory, AsyncTracker } from 'angular-async-tracker';
 
 @Component({
-  template: '<hello-world></hello-world>'
+  template: `
+    <div *ngIf="asyncTracker.active">Loading...</div>
+    <button *ngIf="!asyncTracker.active" (click)="save()">Save</button>
+  `
 })
-export class MyComponent {}
+export class MyComponent {
+
+  asyncTracker: AsyncTracker;
+
+  constructor(
+    private http: Http,
+    asyncTrackerFactory: AsyncTrackerFactory
+  ) {
+    this.asyncTracker = asyncTrackerFactory.create();
+  }
+
+  save() {
+    const saved: Subscription = this.http.post('/foo', {bar: 'bam'})
+      .take(1)
+      .subscribe((result) => {
+        console.log(result);
+      });
+    this.asyncTracker.add(saved);
+  }
+
+}
 ```
 
 ### Usage without a module bundler
