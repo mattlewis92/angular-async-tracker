@@ -15,6 +15,19 @@ function isSubscription(value: any): boolean {
   return value instanceof Subscription;
 }
 
+function removeFromTracking(tracker: AsyncTracker, promiseOrSubscription: PromiseOrSubscription): void {
+  tracker[tracking] = tracker[tracking].filter(item => item !== promiseOrSubscription);
+  updateIsActive(tracker);
+}
+
+function updateIsActive(tracker: AsyncTracker): void {
+  const oldValue: boolean = tracker[isActive];
+  tracker[isActive] = tracker[tracking].length > 0;
+  if (oldValue !== tracker[isActive]) {
+    tracker.active$.next(tracker[isActive]);
+  }
+}
+
 interface AsyncTrackerOptions {}
 
 export class AsyncTracker {
@@ -24,7 +37,7 @@ export class AsyncTracker {
   constructor(trackerOptions?: AsyncTrackerOptions) {
     this[tracking] = [];
     this[options] = trackerOptions;
-    this.updateIsActive();
+    updateIsActive(this);
   }
 
   get active(): boolean {
@@ -40,35 +53,22 @@ export class AsyncTracker {
       promiseOrSubscription.forEach(arrayItem => this.add(arrayItem));
     } else {
       this[tracking].push(promiseOrSubscription);
-      this.updateIsActive();
+      updateIsActive(this);
       if (isPromise(promiseOrSubscription)) {
         const promise: Promise<any> = promiseOrSubscription as Promise<any>;
         promise.then(() => {
-          this.removeFromTracking(promiseOrSubscription);
+          removeFromTracking(this, promiseOrSubscription);
         }, () => {
-          this.removeFromTracking(promiseOrSubscription);
+          removeFromTracking(this, promiseOrSubscription);
         });
       } else if (isSubscription(promiseOrSubscription)) {
         const subscription: Subscription = promiseOrSubscription as Subscription;
         subscription.add(() => {
-          this.removeFromTracking(promiseOrSubscription);
+          removeFromTracking(this, promiseOrSubscription);
         });
       } else {
         throw new Error('asyncTracker.add expects either a promise or an observable subscription.');
       }
-    }
-  }
-
-  private removeFromTracking(promiseOrSubscription: PromiseOrSubscription): void {
-    this[tracking] = this[tracking].filter(item => item !== promiseOrSubscription);
-    this.updateIsActive();
-  }
-
-  private updateIsActive(): void {
-    const oldValue: boolean = this[isActive];
-    this[isActive] = this[tracking].length > 0;
-    if (oldValue !== this[isActive]) {
-      this.active$.next(this[isActive]);
     }
   }
 
