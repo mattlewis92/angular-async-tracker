@@ -1,6 +1,8 @@
 import { TestBed, async } from '@angular/core/testing';
 import { expect } from 'chai';
+import * as sinon from 'sinon';
 import { Subject } from 'rxjs/Subject';
+import { Subscription } from 'rxjs/Subscription';
 import { AsyncTrackerModule, AsyncTrackerFactory, AsyncTracker } from '../src';
 
 function createPromise(): {promise: Promise<any>, resolve: Function, reject: Function} {
@@ -102,6 +104,26 @@ describe('async-tracker-factory service', () => {
     expect(tracker.count).to.equal(1);
     subject2.next();
     expect(tracker.count).to.equal(0);
+  });
+
+  it('should expose an observable that changes when isActive changes', () => {
+    const tracker: AsyncTracker = trackerFactory.create();
+    const activeChanged: sinon.SinonSpy = sinon.spy();
+    const subscription: Subscription = tracker.active$.subscribe(activeChanged);
+    const subject1: Subject<any> = new Subject();
+    const subject2: Subject<any> = new Subject();
+    tracker.add([
+      subject1.take(1).subscribe(),
+      subject2.take(1).subscribe()
+    ]);
+    expect(activeChanged).to.have.been.calledOnce;
+    expect(activeChanged).to.have.been.calledWith(true);
+    subject1.next();
+    expect(activeChanged).to.have.been.calledOnce;
+    subject2.next();
+    expect(activeChanged).to.have.been.calledTwice;
+    expect(activeChanged).to.have.been.calledWith(false);
+    subscription.unsubscribe();
   });
 
 });

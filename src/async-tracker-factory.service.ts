@@ -1,4 +1,5 @@
 import { Subscription } from 'rxjs/Subscription';
+import { Subject } from 'rxjs/Subject';
 
 const isActive: symbol = Symbol('isActive');
 const tracking: symbol = Symbol('tracking');
@@ -18,10 +19,12 @@ interface AsyncTrackerOptions {}
 
 export class AsyncTracker {
 
+  active$: Subject<boolean> = new Subject();
+
   constructor(trackerOptions?: AsyncTrackerOptions) {
-    this[isActive] = false;
     this[tracking] = [];
     this[options] = trackerOptions;
+    this.updateIsActive();
   }
 
   get active(): boolean {
@@ -62,7 +65,11 @@ export class AsyncTracker {
   }
 
   private updateIsActive(): void {
+    const oldValue: boolean = this[isActive];
     this[isActive] = this[tracking].length > 0;
+    if (oldValue !== this[isActive]) {
+      this.active$.next(this[isActive]);
+    }
   }
 
 }
