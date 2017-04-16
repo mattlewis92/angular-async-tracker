@@ -1,5 +1,6 @@
 import { TestBed, async } from '@angular/core/testing';
 import { expect } from 'chai';
+import { Subject } from 'rxjs/Subject';
 import { AsyncTrackerModule, AsyncTrackerFactory, AsyncTracker } from '../src';
 
 function createPromise(): {promise: Promise<any>, resolve: Function, reject: Function} {
@@ -32,6 +33,7 @@ describe('async-tracker-factory service', () => {
   it('should track promises that resolve', async(() => {
     const tracker: AsyncTracker = trackerFactory.create();
     const {promise, resolve} = createPromise();
+    expect(tracker.active).to.be.false;
     tracker.add(promise);
     expect(tracker.active).to.be.true;
     resolve();
@@ -43,6 +45,7 @@ describe('async-tracker-factory service', () => {
   it('should track promises that reject', async(() => {
     const tracker: AsyncTracker = trackerFactory.create();
     const {promise, reject} = createPromise();
+    expect(tracker.active).to.be.false;
     tracker.add(promise);
     expect(tracker.active).to.be.true;
     reject();
@@ -50,5 +53,15 @@ describe('async-tracker-factory service', () => {
       expect(tracker.active).to.be.false;
     });
   }));
+
+  it('should handle observables', () => {
+    const tracker: AsyncTracker = trackerFactory.create();
+    const subject: Subject<any> = new Subject();
+    expect(tracker.active).to.be.false;
+    tracker.add(subject.take(1).subscribe());
+    expect(tracker.active).to.be.true;
+    subject.next();
+    expect(tracker.active).to.be.false;
+  });
 
 });
