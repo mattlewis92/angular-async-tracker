@@ -207,4 +207,145 @@ describe('async-tracker-factory service', () => {
 
   });
 
+  describe('minDuration', () => {
+
+    it('should be active for at least 500ms', fakeAsync(() => {
+      const tracker: AsyncTracker = trackerFactory.create({minDuration: 500});
+      const subject: Subject<any> = new Subject();
+      expect(tracker.active).to.be.false;
+      tracker.add(subject.take(1).subscribe());
+      expect(tracker.active).to.be.true;
+      subject.next();
+      expect(tracker.active).to.be.true;
+      tick(499);
+      expect(tracker.active).to.be.true;
+      tick(1);
+      expect(tracker.active).to.be.false;
+    }));
+
+    it('should clear the tracker', fakeAsync(() => {
+      const tracker: AsyncTracker = trackerFactory.create({minDuration: 500});
+      const subject: Subject<any> = new Subject();
+      expect(tracker.active).to.be.false;
+      tracker.add(subject.take(1).subscribe());
+      expect(tracker.active).to.be.true;
+      tracker.clear();
+      expect(tracker.active).to.be.false;
+      subject.next();
+      expect(tracker.active).to.be.false;
+      tick(499);
+      expect(tracker.active).to.be.false;
+      tick(1);
+      expect(tracker.active).to.be.false;
+    }));
+
+    it('should be deactivate if there is another async item is active', fakeAsync(() => {
+      const tracker: AsyncTracker = trackerFactory.create({minDuration: 500});
+      const subject1: Subject<any> = new Subject();
+      const subject2: Subject<any> = new Subject();
+      expect(tracker.active).to.be.false;
+      tracker.add(subject1.take(1).subscribe());
+      expect(tracker.active).to.be.true;
+      subject1.next();
+      expect(tracker.active).to.be.true;
+      tracker.add(subject2.take(1).subscribe());
+      tick(500);
+      expect(tracker.active).to.be.true;
+      subject2.next();
+      expect(tracker.active).to.be.false;
+    }));
+
+    it('should be tracking for at least minDuration', fakeAsync(() => {
+      const tracker: AsyncTracker = trackerFactory.create({minDuration: 500});
+      const subject: Subject<any> = new Subject();
+      expect(tracker.tracking).to.be.false;
+      tracker.add(subject.take(1).subscribe());
+      expect(tracker.tracking).to.be.true;
+      subject.next();
+      expect(tracker.tracking).to.be.true;
+      tick(499);
+      expect(tracker.tracking).to.be.true;
+      tick(1);
+      expect(tracker.tracking).to.be.false;
+    }));
+
+    it('should be tracking if there is another async item is active', fakeAsync(() => {
+      const tracker: AsyncTracker = trackerFactory.create({minDuration: 500});
+      const subject1: Subject<any> = new Subject();
+      const subject2: Subject<any> = new Subject();
+      expect(tracker.tracking).to.be.false;
+      tracker.add(subject1.take(1).subscribe());
+      expect(tracker.tracking).to.be.true;
+      subject1.next();
+      expect(tracker.tracking).to.be.true;
+      tracker.add(subject2.take(1).subscribe());
+      tick(500);
+      expect(tracker.tracking).to.be.true;
+      subject2.next();
+      expect(tracker.tracking).to.be.false;
+    }));
+
+  });
+
+  describe('minDuration + activationDelay', () => {
+
+    it('should delay, be active, wait until duration, then be inactive', fakeAsync(() => {
+      const tracker: AsyncTracker = trackerFactory.create({minDuration: 500, activationDelay: 250});
+      const subject: Subject<any> = new Subject();
+      tracker.add(subject.take(1).subscribe());
+      expect(tracker.active).to.be.false;
+      tick(250);
+      expect(tracker.active).to.be.true;
+      subject.next();
+      expect(tracker.active).to.be.true;
+      tick(500);
+      expect(tracker.active).to.be.false;
+    }));
+
+    it('should delay, be tracking, wait until duration, then be not tracking', fakeAsync(() => {
+      const tracker: AsyncTracker = trackerFactory.create({minDuration: 500, activationDelay: 250});
+      const subject: Subject<any> = new Subject();
+      expect(tracker.tracking).to.be.false;
+      tracker.add(subject.take(1).subscribe());
+      expect(tracker.tracking).to.be.true;
+      tick(250);
+      expect(tracker.tracking).to.be.true;
+      subject.next();
+      expect(tracker.tracking).to.be.true;
+      tick(500);
+      expect(tracker.tracking).to.be.false;
+    }));
+
+    it('should never be active if the async items complete before the activationDelay', fakeAsync(() => {
+      const tracker: AsyncTracker = trackerFactory.create({minDuration: 500, activationDelay: 250});
+      const subject: Subject<any> = new Subject();
+      tracker.add(subject.take(1).subscribe());
+      expect(tracker.active).to.be.false;
+      tick(200);
+      expect(tracker.active).to.be.false;
+      subject.next();
+      expect(tracker.active).to.be.false;
+      tick(50);
+      expect(tracker.active).to.be.false;
+      tick(500);
+      expect(tracker.active).to.be.false;
+    }));
+
+    it('should not be tracking if the async items complete before the activationDelay', fakeAsync(() => {
+      const tracker: AsyncTracker = trackerFactory.create({minDuration: 500, activationDelay: 250});
+      const subject: Subject<any> = new Subject();
+      tracker.add(subject.take(1).subscribe());
+      expect(tracker.tracking).to.be.true;
+      tick(200);
+      expect(tracker.tracking).to.be.true;
+      subject.next();
+      expect(tracker.tracking).to.be.false;
+      tick(50);
+      expect(tracker.tracking).to.be.false;
+      tick(500);
+      expect(tracker.tracking).to.be.false;
+    }));
+
+  });
+
 });

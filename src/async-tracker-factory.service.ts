@@ -6,6 +6,7 @@ const isActive: symbol = Symbol('isActive');
 const tracking: symbol = Symbol('tracking');
 const options: symbol = Symbol('options');
 const activationDelayTimeout: symbol = Symbol('activationDelayTimeout');
+const minDurationTimeout: symbol = Symbol('minDurationTimeout');
 
 function isPromise(value: any): boolean {
   return typeof value.then === 'function' && typeof value.catch === 'function';
@@ -16,16 +17,22 @@ function isSubscription(value: any): boolean {
 }
 
 function removeFromTracking(tracker: AsyncTracker, promiseOrSubscription: PromiseOrSubscription): void {
-  tracker[tracking] = tracker[tracking].filter(item => item !== promiseOrSubscription);
-  if (tracker[tracking].length === 0 && tracker[activationDelayTimeout]) {
-    tracker[activationDelayTimeout].cancel();
-    delete tracker[activationDelayTimeout];
+  if (tracker[minDurationTimeout]) {
+    tracker[minDurationTimeout].promise.then(() => {
+      removeFromTracking(tracker, promiseOrSubscription);
+    });
+  } else {
+    tracker[tracking] = tracker[tracking].filter(item => item !== promiseOrSubscription);
+    if (tracker[tracking].length === 0 && tracker[activationDelayTimeout]) {
+      tracker[activationDelayTimeout].cancel();
+      delete tracker[activationDelayTimeout];
+    }
+    updateIsActive(tracker);
   }
-  updateIsActive(tracker);
 }
 
 function updateIsActive(tracker: AsyncTracker): void {
-  if (!tracker[activationDelayTimeout]) {
+  if (!tracker[activationDelayTimeout] && (!tracker[minDurationTimeout] || !tracker[isActive])) {
     const oldValue: boolean = tracker[isActive];
     tracker[isActive] = tracker[tracking].length > 0;
     if (oldValue !== tracker[isActive]) {
@@ -50,6 +57,7 @@ export type PromiseOrSubscription = Promise<any> | Subscription;
 
 export interface AsyncTrackerOptions {
   activationDelay?: number;
+  minDuration?: number;
 }
 
 export class AsyncTracker {
@@ -60,7 +68,8 @@ export class AsyncTracker {
   active$: Subject<boolean> = new Subject();
 
   /**
-   * @param trackerOptions.activationDelay - number of milliseconds that an added promise needs to be pending before this tracker is active
+   * @param trackerOptions.activationDelay - number of milliseconds that an added promise needs to be pending before this tracker is active.
+   * @param trackerOptions.minDuration - Minimum number of milliseconds that a tracker will stay active.
    */
   constructor(trackerOptions: AsyncTrackerOptions = {}) {
     this[tracking] = [];
@@ -97,16 +106,32 @@ export class AsyncTracker {
    * `tracker.active` will be true until a promise is resolved or rejected or a subscription emits the first value.
    */
   add(promiseOrSubscription: PromiseOrSubscription | PromiseOrSubscription[]): void {
+
+    const startMinDuration: () => void = () => {
+      if (this[options].minDuration && !this[minDurationTimeout] && this[tracking].length > 0) {
+        this[minDurationTimeout] = timeoutPromise(this[options].minDuration);
+        this[minDurationTimeout].promise.then(() => {
+          delete this[minDurationTimeout];
+          updateIsActive(this);
+        });
+      }
+    };
+
     if (Array.isArray(promiseOrSubscription)) {
       promiseOrSubscription.forEach(arrayItem => this.add(arrayItem));
     } else {
       this[tracking].push(promiseOrSubscription);
-      if (this[tracking].length === 1 && this[options].activationDelay) {
-        this[activationDelayTimeout] = timeoutPromise(this[options].activationDelay);
-        this[activationDelayTimeout].promise.then(() => {
-          delete this[activationDelayTimeout];
-          updateIsActive(this);
-        });
+      if (this[tracking].length === 1) {
+        if (this[options].activationDelay) {
+          this[activationDelayTimeout] = timeoutPromise(this[options].activationDelay);
+          this[activationDelayTimeout].promise.then(() => {
+            delete this[activationDelayTimeout];
+            startMinDuration();
+            updateIsActive(this);
+          });
+        } else {
+          startMinDuration();
+        }
       }
       updateIsActive(this);
       if (isPromise(promiseOrSubscription)) {
@@ -134,6 +159,10 @@ export class AsyncTracker {
     if (this[activationDelayTimeout]) {
       this[activationDelayTimeout].cancel();
       delete this[activationDelayTimeout];
+    }
+    if (this[minDurationTimeout]) {
+      this[minDurationTimeout].cancel();
+      delete this[minDurationTimeout];
     }
     this[tracking] = [];
     updateIsActive(this);
