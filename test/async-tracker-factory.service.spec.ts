@@ -126,7 +126,7 @@ describe('async-tracker-factory service', () => {
     subscription.unsubscribe();
   });
 
-  it('should destroy the tracker', () => {
+  it('should cancel the tracker', () => {
     const tracker: AsyncTracker = trackerFactory.create();
     const subject: Subject<any> = new Subject();
     expect(tracker.active).to.be.false;
@@ -134,7 +134,7 @@ describe('async-tracker-factory service', () => {
     tracker.add(subject.take(1).subscribe());
     expect(tracker.trackingCount).to.equal(1);
     expect(tracker.active).to.be.true;
-    tracker.destroy();
+    tracker.cancel();
     expect(tracker.trackingCount).to.equal(0);
     expect(tracker.active).to.be.false;
     subject.next();
@@ -187,7 +187,7 @@ describe('async-tracker-factory service', () => {
       expect(tracker.active).to.be.false;
     }));
 
-    it('should destroy the tracker', fakeAsync(() => {
+    it('should cancel the tracker', fakeAsync(() => {
       const tracker: AsyncTracker = trackerFactory.create({activationDelay: 500});
       const subject: Subject<any> = new Subject();
       expect(tracker.active).to.be.false;
@@ -195,7 +195,7 @@ describe('async-tracker-factory service', () => {
       expect(tracker.active).to.be.false;
       tick(499);
       expect(tracker.active).to.be.false;
-      tracker.destroy();
+      tracker.cancel();
       tick(1);
       expect(tracker.active).to.be.false;
       subject.next();

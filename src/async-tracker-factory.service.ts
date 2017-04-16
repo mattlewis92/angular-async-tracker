@@ -105,7 +105,7 @@ export class AsyncTracker {
     }
   }
 
-  destroy(): void {
+  cancel(): void {
     if (this[activationDelayTimeout]) {
       this[activationDelayTimeout].cancel();
       delete this[activationDelayTimeout];
