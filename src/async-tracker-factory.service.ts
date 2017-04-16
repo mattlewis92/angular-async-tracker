@@ -5,8 +5,6 @@ const isActive: symbol = Symbol('isActive');
 const tracking: symbol = Symbol('tracking');
 const options: symbol = Symbol('options');
 
-type PromiseOrSubscription = Promise<any> | Subscription;
-
 function isPromise(value: any): boolean {
   return typeof value.then === 'function' && typeof value.catch === 'function';
 }
@@ -28,7 +26,9 @@ function updateIsActive(tracker: AsyncTracker): void {
   }
 }
 
-interface AsyncTrackerOptions {}
+export type PromiseOrSubscription = Promise<any> | Subscription;
+
+export interface AsyncTrackerOptions {}
 
 export class AsyncTracker {
 
