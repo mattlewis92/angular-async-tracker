@@ -70,6 +70,10 @@ export class AsyncTracker {
     return this[tracking].length;
   }
 
+  get tracking(): PromiseOrSubscription[] {
+    return [...this[tracking]];
+  }
+
   add(promiseOrSubscription: PromiseOrSubscription | PromiseOrSubscription[]): void {
     if (Array.isArray(promiseOrSubscription)) {
       promiseOrSubscription.forEach(arrayItem => this.add(arrayItem));

@@ -126,7 +126,7 @@ describe('async-tracker-factory service', () => {
     subscription.unsubscribe();
   });
 
-  it('should destroy the tracker', async(() => {
+  it('should destroy the tracker', () => {
     const tracker: AsyncTracker = trackerFactory.create();
     const subject: Subject<any> = new Subject();
     expect(tracker.active).to.be.false;
@@ -140,7 +140,23 @@ describe('async-tracker-factory service', () => {
     subject.next();
     expect(tracker.trackingCount).to.equal(0);
     expect(tracker.active).to.be.false;
-  }));
+  });
+
+  it('should expose all tracking items', () => {
+    const tracker: AsyncTracker = trackerFactory.create();
+    const subject: Subject<any> = new Subject();
+    const subscription: Subscription = subject.take(1).subscribe();
+    expect(tracker.tracking).to.deep.equal([]);
+    tracker.add(subscription);
+    expect(tracker.tracking).to.deep.equal([subscription]);
+    expect(tracker.tracking).not.to.equal(tracker.tracking);
+  });
+
+  it('should expose a clone of the tracking array', () => {
+    const tracker: AsyncTracker = trackerFactory.create();
+    expect(tracker.tracking).to.deep.equal(tracker.tracking);
+    expect(tracker.tracking).not.to.equal(tracker.tracking);
+  });
 
   describe('activationDelay', () => {
 
