@@ -7,9 +7,6 @@
 [![GitHub stars](https://img.shields.io/github/stars/mattlewis92/angular-async-tracker.svg)](https://github.com/mattlewis92/angular-async-tracker/stargazers)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/mattlewis92/angular-async-tracker/master/LICENSE)
 
-## Demo
-https://mattlewis92.github.io/angular-async-tracker/
-
 ## Table of contents
 
 - [About](#about)
@@ -52,8 +49,6 @@ import { Component } from '@angular/core';
 })
 export class MyComponent {}
 ```
-
-You may also find it useful to view the [demo source](https://github.com/mattlewis92/angular-async-tracker/blob/master/demo/demo.component.ts).
 
 ### Usage without a module bundler
 ```
