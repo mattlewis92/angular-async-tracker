@@ -1,4 +1,4 @@
-import { TestBed, async } from '@angular/core/testing';
+import { TestBed, async, fakeAsync, tick } from '@angular/core/testing';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { Subject } from 'rxjs/Subject';
@@ -124,6 +124,68 @@ describe('async-tracker-factory service', () => {
     expect(activeChanged).to.have.been.calledTwice;
     expect(activeChanged).to.have.been.calledWith(false);
     subscription.unsubscribe();
+  });
+
+  it('should destroy the tracker', async(() => {
+    const tracker: AsyncTracker = trackerFactory.create();
+    const subject: Subject<any> = new Subject();
+    expect(tracker.active).to.be.false;
+    expect(tracker.activeCount).to.equal(0);
+    tracker.add(subject.take(1).subscribe());
+    expect(tracker.activeCount).to.equal(1);
+    expect(tracker.active).to.be.true;
+    tracker.destroy();
+    expect(tracker.activeCount).to.equal(0);
+    expect(tracker.active).to.be.false;
+    subject.next();
+    expect(tracker.activeCount).to.equal(0);
+    expect(tracker.active).to.be.false;
+  }));
+
+  describe('activationDelay', () => {
+
+    it('should take 500ms to activate the tracker', fakeAsync(() => {
+      const tracker: AsyncTracker = trackerFactory.create({activationDelay: 500});
+      const subject: Subject<any> = new Subject();
+      expect(tracker.active).to.be.false;
+      tracker.add(subject.take(1).subscribe());
+      expect(tracker.active).to.be.false;
+      tick(499);
+      expect(tracker.active).to.be.false;
+      tick(1);
+      expect(tracker.active).to.be.true;
+      subject.next();
+      expect(tracker.active).to.be.false;
+    }));
+
+    it('should never activate the tracker', fakeAsync(() => {
+      const tracker: AsyncTracker = trackerFactory.create({activationDelay: 500});
+      const subject: Subject<any> = new Subject();
+      expect(tracker.active).to.be.false;
+      tracker.add(subject.take(1).subscribe());
+      expect(tracker.active).to.be.false;
+      tick(499);
+      subject.next();
+      expect(tracker.active).to.be.false;
+      tick(1);
+      expect(tracker.active).to.be.false;
+    }));
+
+    it('should destroy the tracker', fakeAsync(() => {
+      const tracker: AsyncTracker = trackerFactory.create({activationDelay: 500});
+      const subject: Subject<any> = new Subject();
+      expect(tracker.active).to.be.false;
+      tracker.add(subject.take(1).subscribe());
+      expect(tracker.active).to.be.false;
+      tick(499);
+      expect(tracker.active).to.be.false;
+      tracker.destroy();
+      tick(1);
+      expect(tracker.active).to.be.false;
+      subject.next();
+      expect(tracker.active).to.be.false;
+    }));
+
   });
 
 });
