@@ -24,6 +24,10 @@ export class AsyncTracker {
     return this[isActive];
   }
 
+  get count(): number {
+    return this[tracking].length;
+  }
+
   add(promiseOrSubscription: PromiseOrSubscription | PromiseOrSubscription[]): void {
     if (Array.isArray(promiseOrSubscription)) {
       promiseOrSubscription.forEach(arrayItem => this.add(arrayItem));

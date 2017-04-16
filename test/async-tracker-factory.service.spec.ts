@@ -88,4 +88,20 @@ describe('async-tracker-factory service', () => {
     });
   }));
 
+  it('should expose the count of currently tracked items', () => {
+    const tracker: AsyncTracker = trackerFactory.create();
+    const subject1: Subject<any> = new Subject();
+    const subject2: Subject<any> = new Subject();
+    expect(tracker.count).to.equal(0);
+    tracker.add([
+      subject1.take(1).subscribe(),
+      subject2.take(1).subscribe()
+    ]);
+    expect(tracker.count).to.equal(2);
+    subject1.next();
+    expect(tracker.count).to.equal(1);
+    subject2.next();
+    expect(tracker.count).to.equal(0);
+  });
+
 });
