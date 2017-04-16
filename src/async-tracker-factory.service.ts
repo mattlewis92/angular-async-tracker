@@ -2,6 +2,7 @@ import { Subscription } from 'rxjs/Subscription';
 
 const isActive: symbol = Symbol('isActive');
 const tracking: symbol = Symbol('tracking');
+const options: symbol = Symbol('options');
 
 type PromiseOrSubscription = Promise<any> | Subscription;
 
@@ -13,11 +14,14 @@ function isSubscription(value: any): boolean {
   return value instanceof Subscription;
 }
 
+interface AsyncTrackerOptions {}
+
 export class AsyncTracker {
 
-  constructor() {
+  constructor(trackerOptions?: AsyncTrackerOptions) {
     this[isActive] = false;
     this[tracking] = [];
+    this[options] = trackerOptions;
   }
 
   get active(): boolean {
@@ -65,8 +69,8 @@ export class AsyncTracker {
 
 export class AsyncTrackerFactory {
 
-  create(): AsyncTracker {
-    return new AsyncTracker();
+  create(trackerOptions?: AsyncTrackerOptions): AsyncTracker {
+    return new AsyncTracker(trackerOptions);
   }
 
 }
