@@ -45,7 +45,7 @@
                                     </a>
                                 </li>
                                 <li class="link">
-                                  <a href="./index.html"  class="active" ><span class="fa fa-file-text-o"></span>README</a>
+                                  <a href="./index.html" ><span class="fa fa-file-text-o"></span>README</a>
                                 </li>
                                 <li class="link">
                                         <a href="./changelog.html"
@@ -115,7 +115,7 @@
                                            </a>
                                        </li>
                                        <li class="link">
-                                         <a href="./index.html"  class="active" ><span class="fa fa-file-text-o"></span>README</a>
+                                         <a href="./index.html" ><span class="fa fa-file-text-o"></span>README</a>
                                        </li>
                                        <li class="link">
                                                <a href="./changelog.html"
@@ -157,88 +157,23 @@
                <div class="content getting-started">
                    <div class="content-data">
 
-<h1 id="angular-async-tracker">angular async tracker</h1>
-<p><a href="https://travis-ci.org/mattlewis92/angular-async-tracker">undefined</a>
-<a href="https://codecov.io/gh/mattlewis92/angular-async-tracker">undefined</a>
-<a href="http://badge.fury.io/js/angular-async-tracker">undefined</a>
-<a href="https://david-dm.org/mattlewis92/angular-async-tracker?type=dev">undefined</a>
-<a href="https://github.com/mattlewis92/angular-async-tracker/issues">undefined</a>
-<a href="https://github.com/mattlewis92/angular-async-tracker/stargazers">undefined</a>
-<a href="https://raw.githubusercontent.com/mattlewis92/angular-async-tracker/master/LICENSE">undefined</a></p>
-<h2 id="table-of-contents">Table of contents</h2>
-<ul>
-<li><a href="#about">About</a></li>
-<li><a href="#installation">Installation</a></li>
-<li><a href="#documentation">Documentation</a></li>
-<li><a href="#development">Development</a></li>
-<li><a href="#license">License</a></li>
-</ul>
-<h2 id="about">About</h2>
-<p>A port of <a href="https://github.com/ajoslin/angular-promise-tracker">angular-promise-tracker</a> to angular 2+ that also supports observables</p>
-<h2 id="installation">Installation</h2>
-<p>Install through npm:</p>
-<pre class="line-numbers"><code class="language-none">npm install --save angular-async-tracker</code></pre><p>Then include in your apps module:</p>
-<pre class="line-numbers"><code class="language-typescript">import { Component, NgModule } from &#39;&#64;angular/core&#39;;
-import { AsyncTrackerModule } from &#39;angular-async-tracker&#39;;
-
-&#64;NgModule({
-  imports: [
-    AsyncTrackerModule.forRoot()
-  ]
-})
-export class MyModule {}</code></pre><p>Finally use in one of your apps components:</p>
-<pre class="line-numbers"><code class="language-typescript">import { Component } from &#39;&#64;angular/core&#39;;
-import { Http } from &#39;&#64;angular/http&#39;;
-import { Subscription } from &#39;rxjs/Subscription&#39;;
-import { AsyncTrackerFactory, AsyncTracker } from &#39;angular-async-tracker&#39;;
-
-&#64;Component({
-  template: `
-    &lt;div *ngIf=&quot;asyncTracker.active&quot;&gt;Loading...&lt;/div&gt;
-    &lt;button *ngIf=&quot;!asyncTracker.active&quot; (click)=&quot;save()&quot;&gt;Save&lt;/button&gt;
-  `
-})
-export class MyComponent {
-
-  asyncTracker: AsyncTracker;
-
-  constructor(
-    private http: Http,
-    asyncTrackerFactory: AsyncTrackerFactory
-  ) {
-    this.asyncTracker = asyncTrackerFactory.create();
-  }
-
-  save() {
-    const saved: Subscription = this.http.post(&#39;/foo&#39;, {bar: &#39;bam&#39;})
-      .take(1)
-      .subscribe((result) =&gt; {
-        console.log(result);
-      });
-    // `asyncTracker.add` accepts promises or observable subscriptions
-    this.asyncTracker.add(saved);
-  }
-
-}</code></pre><h3 id="usage-without-a-module-bundler">Usage without a module bundler</h3>
-<pre class="line-numbers"><code class="language-none">&lt;script src=&quot;node_modules/angular-async-tracker/bundles/angular-async-tracker.umd.js&quot;&gt;&lt;/script&gt;
-&lt;script&gt;
-    // everything is exported angularAsyncTracker namespace
-&lt;/script&gt;</code></pre><h2 id="documentation">Documentation</h2>
-<p>All documentation is auto-generated from the source via <a href="https://compodoc.github.io/compodoc/">compodoc</a> and can be viewed here:
-<a href="https://mattlewis92.github.io/angular-async-tracker/docs/">https://mattlewis92.github.io/angular-async-tracker/docs/</a></p>
-<h2 id="development">Development</h2>
-<h3 id="prepare-your-environment">Prepare your environment</h3>
-<ul>
-<li>Install <a href="http://nodejs.org/">Node.js</a> and NPM (should come with)</li>
-<li>Install local dev dependencies: <code>npm</code> while current directory is this repo</li>
-</ul>
-<h3 id="development-server">Development server</h3>
-<p>Run <code>npm start</code> to start a development server on port 8000 with auto reload + tests.</p>
-<h3 id="testing">Testing</h3>
-<p>Run <code>npm test</code> to run tests once or <code>npm run test:watch</code> to continually run tests.</p>
-<h3 id="release">Release</h3>
-<pre class="line-numbers"><code class="language-bash">npm run release</code></pre><h2 id="license">License</h2>
-<p>MIT</p>
+<p>The MIT License (MIT)</p>
+<p>Copyright (c) 2017 Matt Lewis</p>
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &quot;Software&quot;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+<p>The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.</p>
+<p>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</p>
 
 
 
