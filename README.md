@@ -70,6 +70,7 @@ export class MyComponent {
       .subscribe((result) => {
         console.log(result);
       });
+    // `asyncTracker.add` accepts promises or observable subscriptions
     this.asyncTracker.add(saved);
   }
 
@@ -91,19 +92,18 @@ https://mattlewis92.github.io/angular-async-tracker/docs/
 ## Development
 
 ### Prepare your environment
-* Install [Node.js](http://nodejs.org/) and [yarn](https://yarnpkg.com/en/docs/install)
-* Install local dev dependencies: `yarn` while current directory is this repo
+* Install [Node.js](http://nodejs.org/) and NPM (should come with)
+* Install local dev dependencies: `npm` while current directory is this repo
 
 ### Development server
-Run `yarn start` to start a development server on port 8000 with auto reload + tests.
+Run `npm start` to start a development server on port 8000 with auto reload + tests.
 
 ### Testing
-Run `yarn test` to run tests once or `yarn run test:watch` to continually run tests.
+Run `npm test` to run tests once or `npm run test:watch` to continually run tests.
 
 ### Release
-* Bump the version in package.json (once the module hits 1.0 this will become automatic)
 ```bash
-yarn run release
+npm run release
 ```
 
 ## License
