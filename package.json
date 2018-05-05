@@ -1,6 +1,6 @@
 {
   "name": "angular-async-tracker",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A port of angular-promise-tracker to angular 2+ that also supports observables",
   "main": "./bundles/angular-async-tracker.umd.js",
   "module": "./index.js",
@@ -94,7 +94,7 @@
     "zone.js": "^0.8.4"
   },
   "peerDependencies": {
-    "@angular/core": ">=2.0.0 <6.0.0"
+    "@angular/core": ">=2.0.0 <7.0.0"
   },
   "config": {
     "commitizen": {
