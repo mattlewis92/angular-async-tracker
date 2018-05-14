@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="2.0.0"></a>
+# [2.0.0](https://github.com/mattlewis92/angular-async-tracker/compare/v1.0.2...v2.0.0) (2018-05-14)
+
+
+### Features
+
+* upgrade to angular 6 ([342865e](https://github.com/mattlewis92/angular-async-tracker/commit/342865e))
+
+
+### BREAKING CHANGES
+
+* angular 6 or higher is now required to use this module. Also the
+`AsyncTrackerModule` has been removed. To migrate, just remove it from your code.
+
+
+
 <a name="1.0.2"></a>
 ## [1.0.2](https://github.com/mattlewis92/angular-async-tracker/compare/v1.0.1...v1.0.2) (2018-05-05)
 
