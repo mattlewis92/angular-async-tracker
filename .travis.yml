@@ -1,7 +1,7 @@
 language: node_js
 
 node_js:
-- '8'
+  - '10'
 
 script: npm test
 
@@ -16,3 +16,8 @@ after_success:
 - npm run codecov
 
 sudo: required
+
+addons:
+  chrome: stable
+
+dist: trusty
