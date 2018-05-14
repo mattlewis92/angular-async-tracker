@@ -1,4 +1,3 @@
-export * from './async-tracker.module';
 export {
   AsyncTracker,
   AsyncTrackerFactory

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subscription } from 'rxjs/Subscription';
-import { Subject } from 'rxjs/Subject';
+import { Subscription, Subject } from 'rxjs';
 
 const isActive: symbol = Symbol('isActive');
 const tracking: symbol = Symbol('tracking');
@@ -190,7 +189,9 @@ export class AsyncTracker {
   }
 }
 
-@Injectable() // tslint:disable max-classes-per-file
+@Injectable({
+  providedIn: 'root'
+}) // tslint:disable max-classes-per-file
 export class AsyncTrackerFactory {
   create(trackerOptions?: AsyncTrackerOptions): AsyncTracker {
     return new AsyncTracker(trackerOptions);

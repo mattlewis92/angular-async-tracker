@@ -1,9 +1,9 @@
 import { TestBed, async, fakeAsync, tick } from '@angular/core/testing';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { Subject } from 'rxjs/Subject';
-import { Subscription } from 'rxjs/Subscription';
-import { AsyncTrackerModule, AsyncTrackerFactory, AsyncTracker } from '../src';
+import { Subject, Subscription } from 'rxjs';
+import { AsyncTrackerFactory, AsyncTracker } from '../src';
+import { take } from 'rxjs/operators';
 
 function createPromise(): {
   promise: Promise<any>;
@@ -24,7 +24,7 @@ describe('async-tracker-factory service', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [AsyncTrackerModule.forRoot()]
+      imports: []
     });
     trackerFactory = TestBed.get(AsyncTrackerFactory);
   });
@@ -62,7 +62,7 @@ describe('async-tracker-factory service', () => {
     const tracker: AsyncTracker = trackerFactory.create();
     const subject: Subject<any> = new Subject();
     expect(tracker.active).to.be.false;
-    tracker.add(subject.take(1).subscribe());
+    tracker.add(subject.pipe(take(1)).subscribe());
     expect(tracker.active).to.be.true;
     subject.next();
     expect(tracker.active).to.be.false;
@@ -79,7 +79,7 @@ describe('async-tracker-factory service', () => {
     const { promise, resolve } = createPromise();
     const subject: Subject<any> = new Subject();
     expect(tracker.active).to.be.false;
-    tracker.add([subject.take(1).subscribe(), promise]);
+    tracker.add([subject.pipe(take(1)).subscribe(), promise]);
     expect(tracker.active).to.be.true;
     resolve();
     setTimeout(() => {
@@ -94,7 +94,10 @@ describe('async-tracker-factory service', () => {
     const subject1: Subject<any> = new Subject();
     const subject2: Subject<any> = new Subject();
     expect(tracker.trackingCount).to.equal(0);
-    tracker.add([subject1.take(1).subscribe(), subject2.take(1).subscribe()]);
+    tracker.add([
+      subject1.pipe(take(1)).subscribe(),
+      subject2.pipe(take(1)).subscribe()
+    ]);
     expect(tracker.trackingCount).to.equal(2);
     subject1.next();
     expect(tracker.trackingCount).to.equal(1);
@@ -108,7 +111,10 @@ describe('async-tracker-factory service', () => {
     const subscription: Subscription = tracker.active$.subscribe(activeChanged);
     const subject1: Subject<any> = new Subject();
     const subject2: Subject<any> = new Subject();
-    tracker.add([subject1.take(1).subscribe(), subject2.take(1).subscribe()]);
+    tracker.add([
+      subject1.pipe(take(1)).subscribe(),
+      subject2.pipe(take(1)).subscribe()
+    ]);
     expect(activeChanged).to.have.been.calledOnce;
     expect(activeChanged).to.have.been.calledWith(true);
     subject1.next();
@@ -124,7 +130,7 @@ describe('async-tracker-factory service', () => {
     const subject: Subject<any> = new Subject();
     expect(tracker.active).to.be.false;
     expect(tracker.trackingCount).to.equal(0);
-    tracker.add(subject.take(1).subscribe());
+    tracker.add(subject.pipe(take(1)).subscribe());
     expect(tracker.trackingCount).to.equal(1);
     expect(tracker.active).to.be.true;
     tracker.clear();
@@ -144,7 +150,7 @@ describe('async-tracker-factory service', () => {
         });
         const subject: Subject<any> = new Subject();
         expect(tracker.active).to.be.false;
-        tracker.add(subject.take(1).subscribe());
+        tracker.add(subject.pipe(take(1)).subscribe());
         expect(tracker.active).to.be.false;
         tick(499);
         expect(tracker.active).to.be.false;
@@ -163,7 +169,7 @@ describe('async-tracker-factory service', () => {
         });
         const subject: Subject<any> = new Subject();
         expect(tracker.active).to.be.false;
-        tracker.add(subject.take(1).subscribe());
+        tracker.add(subject.pipe(take(1)).subscribe());
         expect(tracker.active).to.be.false;
         tick(499);
         subject.next();
@@ -181,7 +187,7 @@ describe('async-tracker-factory service', () => {
         });
         const subject: Subject<any> = new Subject();
         expect(tracker.active).to.be.false;
-        tracker.add(subject.take(1).subscribe());
+        tracker.add(subject.pipe(take(1)).subscribe());
         expect(tracker.active).to.be.false;
         tick(499);
         expect(tracker.active).to.be.false;
@@ -202,7 +208,7 @@ describe('async-tracker-factory service', () => {
         const subject: Subject<any> = new Subject();
         expect(tracker.active).to.be.false;
         expect(tracker.tracking).to.be.false;
-        tracker.add(subject.take(1).subscribe());
+        tracker.add(subject.pipe(take(1)).subscribe());
         expect(tracker.active).to.be.false;
         expect(tracker.tracking).to.be.true;
         tick(499);
@@ -227,7 +233,7 @@ describe('async-tracker-factory service', () => {
         });
         const subject: Subject<any> = new Subject();
         expect(tracker.active).to.be.false;
-        tracker.add(subject.take(1).subscribe());
+        tracker.add(subject.pipe(take(1)).subscribe());
         expect(tracker.active).to.be.true;
         subject.next();
         expect(tracker.active).to.be.true;
@@ -246,7 +252,7 @@ describe('async-tracker-factory service', () => {
         });
         const subject: Subject<any> = new Subject();
         expect(tracker.active).to.be.false;
-        tracker.add(subject.take(1).subscribe());
+        tracker.add(subject.pipe(take(1)).subscribe());
         expect(tracker.active).to.be.true;
         tracker.clear();
         expect(tracker.active).to.be.false;
@@ -268,11 +274,11 @@ describe('async-tracker-factory service', () => {
         const subject1: Subject<any> = new Subject();
         const subject2: Subject<any> = new Subject();
         expect(tracker.active).to.be.false;
-        tracker.add(subject1.take(1).subscribe());
+        tracker.add(subject1.pipe(take(1)).subscribe());
         expect(tracker.active).to.be.true;
         subject1.next();
         expect(tracker.active).to.be.true;
-        tracker.add(subject2.take(1).subscribe());
+        tracker.add(subject2.pipe(take(1)).subscribe());
         tick(500);
         expect(tracker.active).to.be.true;
         subject2.next();
@@ -288,7 +294,7 @@ describe('async-tracker-factory service', () => {
         });
         const subject: Subject<any> = new Subject();
         expect(tracker.tracking).to.be.false;
-        tracker.add(subject.take(1).subscribe());
+        tracker.add(subject.pipe(take(1)).subscribe());
         expect(tracker.tracking).to.be.true;
         subject.next();
         expect(tracker.tracking).to.be.true;
@@ -308,11 +314,11 @@ describe('async-tracker-factory service', () => {
         const subject1: Subject<any> = new Subject();
         const subject2: Subject<any> = new Subject();
         expect(tracker.tracking).to.be.false;
-        tracker.add(subject1.take(1).subscribe());
+        tracker.add(subject1.pipe(take(1)).subscribe());
         expect(tracker.tracking).to.be.true;
         subject1.next();
         expect(tracker.tracking).to.be.true;
-        tracker.add(subject2.take(1).subscribe());
+        tracker.add(subject2.pipe(take(1)).subscribe());
         tick(500);
         expect(tracker.tracking).to.be.true;
         subject2.next();
@@ -330,7 +336,7 @@ describe('async-tracker-factory service', () => {
           activationDelay: 250
         });
         const subject: Subject<any> = new Subject();
-        tracker.add(subject.take(1).subscribe());
+        tracker.add(subject.pipe(take(1)).subscribe());
         expect(tracker.active).to.be.false;
         tick(250);
         expect(tracker.active).to.be.true;
@@ -350,7 +356,7 @@ describe('async-tracker-factory service', () => {
         });
         const subject: Subject<any> = new Subject();
         expect(tracker.tracking).to.be.false;
-        tracker.add(subject.take(1).subscribe());
+        tracker.add(subject.pipe(take(1)).subscribe());
         expect(tracker.tracking).to.be.true;
         tick(250);
         expect(tracker.tracking).to.be.true;
@@ -369,7 +375,7 @@ describe('async-tracker-factory service', () => {
           activationDelay: 250
         });
         const subject: Subject<any> = new Subject();
-        tracker.add(subject.take(1).subscribe());
+        tracker.add(subject.pipe(take(1)).subscribe());
         expect(tracker.active).to.be.false;
         tick(200);
         expect(tracker.active).to.be.false;
@@ -390,7 +396,7 @@ describe('async-tracker-factory service', () => {
           activationDelay: 250
         });
         const subject: Subject<any> = new Subject();
-        tracker.add(subject.take(1).subscribe());
+        tracker.add(subject.pipe(take(1)).subscribe());
         expect(tracker.tracking).to.be.true;
         tick(200);
         expect(tracker.tracking).to.be.true;

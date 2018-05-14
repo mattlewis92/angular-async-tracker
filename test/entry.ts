@@ -8,7 +8,6 @@ import 'zone.js/dist/sync-test';
 import 'zone.js/dist/mocha-patch';
 import 'zone.js/dist/async-test';
 import 'zone.js/dist/fake-async-test';
-import 'rxjs/Rx';
 import { use } from 'chai';
 import * as sinonChai from 'sinon-chai';
 import { TestBed } from '@angular/core/testing';
