@@ -12,7 +12,6 @@
   "exclude": [
     "node_modules",
     "test",
-    "karma.conf.ts",
-    "webpack.config.umd.ts"
+    "karma.conf.ts"
   ]
 }
