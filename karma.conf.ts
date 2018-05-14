@@ -20,6 +20,7 @@ export default config => {
     },
 
     webpack: {
+      mode: 'development',
       resolve: {
         extensions: ['.ts', '.js']
       },
@@ -29,7 +30,11 @@ export default config => {
             test: /\.ts$/,
             loader: 'tslint-loader',
             exclude: /node_modules/,
-            enforce: 'pre'
+            enforce: 'pre',
+            options: {
+              emitErrors: config.singleRun,
+              failOnHint: config.singleRun
+            }
           },
           {
             test: /\.ts$/,
@@ -41,6 +46,12 @@ export default config => {
             exclude: /(node_modules|\.spec\.ts$)/,
             loader: 'istanbul-instrumenter-loader',
             enforce: 'post'
+          },
+          {
+            test: /node_modules\/@angular\/core\/.+\/core\.es5\.js$/,
+            parser: {
+              system: true // disable `System.import() is deprecated and will be removed soon. Use import() instead.` warning
+            }
           }
         ]
       },
@@ -49,20 +60,14 @@ export default config => {
           filename: null,
           test: /\.(ts|js)($|\?)/i
         }),
-        new webpack.LoaderOptionsPlugin({
-          options: {
-            tslint: {
-              emitErrors: config.singleRun,
-              failOnHint: false
-            }
-          }
-        }),
         new webpack.ContextReplacementPlugin(
           /angular(\\|\/)core(\\|\/)@angular/,
           path.join(__dirname, 'src')
-        ),
-        ...(config.singleRun ? [new webpack.NoEmitOnErrorsPlugin()] : [])
-      ]
+        )
+      ],
+      optimization: {
+        noEmitOnErrors: config.singleRun
+      }
     },
 
     coverageIstanbulReporter: {
