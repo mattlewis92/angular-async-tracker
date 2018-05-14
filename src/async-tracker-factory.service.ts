@@ -41,8 +41,8 @@ function updateIsActive(tracker: AsyncTracker): void {
   }
 }
 
-function timeoutPromise(duration: number): {promise: Promise<any>, cancel: Function} {
-  let cancel: Function;
+function timeoutPromise(duration: number): {promise: Promise<any>, cancel: () => void} {
+  let cancel: () => void;
   const promise: Promise<any> = new Promise((resolve) => {
     const timerId: any = setTimeout(() => resolve(), duration);
     cancel = () => {
@@ -170,7 +170,7 @@ export class AsyncTracker {
 
 }
 
-@Injectable()
+@Injectable() // tslint:disable max-classes-per-file
 export class AsyncTrackerFactory {
 
   create(trackerOptions?: AsyncTrackerOptions): AsyncTracker {

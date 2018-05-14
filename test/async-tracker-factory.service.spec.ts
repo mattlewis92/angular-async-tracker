@@ -5,9 +5,10 @@ import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 import { AsyncTrackerModule, AsyncTrackerFactory, AsyncTracker } from '../src';
 
-function createPromise(): {promise: Promise<any>, resolve: Function, reject: Function} {
-  let resolve: Function, reject: Function;
-  let promise: Promise<any> = new Promise((_resolve, _reject) => {
+function createPromise(): {promise: Promise<any>, resolve: () => void, reject: () => void} {
+  let resolve: () => void;
+  let reject: () => void;
+  const promise: Promise<any> = new Promise((_resolve, _reject) => {
     resolve = _resolve;
     reject = _reject;
   });
