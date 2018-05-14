@@ -2,21 +2,16 @@
   "name": "angular-async-tracker",
   "version": "1.0.2",
   "description": "A port of angular-promise-tracker to angular 2+ that also supports observables",
-  "main": "./bundles/angular-async-tracker.umd.js",
-  "module": "./index.js",
-  "typings": "./index.d.ts",
   "scripts": {
     "start": "npm run test:watch",
-    "build:umd": "webpack --config webpack.config.umd.ts",
-    "build:ngc": "ngc -p tsconfig-ngc.json",
-    "build:dist": "npm run build:umd && npm run build:ngc",
+    "build:dist": "ng-packagr -p package.json",
     "build:clean": "del-cli dist",
     "test": "karma start --single-run && npm run build:dist && npm run build:clean",
     "test:watch": "karma start --auto-watch",
     "commit": "git-cz",
     "compodoc": "compodoc -p tsconfig-compodoc.json -d docs --disableGraph --disableCoverage --disablePrivateOrInternalSupport",
     "gh-pages": "git checkout gh-pages && git merge master --no-edit --no-ff && npm run compodoc && git add . && git commit -m \"chore: build docs\" && git push && git checkout master",
-    "copyfiles": "copyfiles package.json LICENSE README.md CHANGELOG.md dist",
+    "copyfiles": "copyfiles CHANGELOG.md dist",
     "prerelease": "npm test",
     "release:git": "standard-version && git push --follow-tags origin master",
     "release:npm": "npm run build:dist && npm run copyfiles && npm publish dist",
@@ -24,6 +19,11 @@
     "postrelease": "npm run build:clean && npm run gh-pages",
     "commitmsg": "validate-commit-msg",
     "codecov": "cat coverage/lcov.info | codecov"
+  },
+  "ngPackage": {
+    "lib": {
+      "entryFile": "src/index.ts"
+    }
   },
   "repository": {
     "type": "git",
@@ -77,6 +77,7 @@
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^3.0.0",
     "mocha": "^5.1.1",
+    "ng-packagr": "^1.7.0",
     "rxjs": "^5.5.10",
     "sinon": "^4.5.0",
     "sinon-chai": "^3.0.0",
@@ -84,11 +85,9 @@
     "ts-node": "^6.0.3",
     "tslint": "^4.0.2",
     "tslint-loader": "^3.6.0",
-    "typescript": "~2.2.1",
+    "typescript": "~2.3.4",
     "validate-commit-msg": "^2.8.0",
     "webpack": "^2.2.0",
-    "webpack-angular-externals": "^1.0.0",
-    "webpack-rxjs-externals": "^1.0.0",
     "zone.js": "^0.8.26"
   },
   "peerDependencies": {
